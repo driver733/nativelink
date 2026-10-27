@@ -3164,6 +3164,7 @@ dependencies = [
  "async-lock",
  "async-trait",
  "axum",
+ "base64 0.22.1",
  "bytes",
  "fastcdc",
  "futures",
@@ -3186,6 +3187,8 @@ dependencies = [
  "prost",
  "prost-types",
  "rand 0.9.4",
+ "reqwest",
+ "rustls",
  "serde_json",
  "serde_json5",
  "sha2 0.10.9",
@@ -3198,6 +3201,7 @@ dependencies = [
  "tracing",
  "tracing-test",
  "uuid",
+ "webpki-roots 1.0.10",
  "zstd 0.14.3",
 ]
 

@@ -305,6 +305,70 @@ pub struct FetchConfig {
     /// This store name referenced here may be reused multiple times.
     #[serde(deserialize_with = "convert_string_with_shellexpand")]
     pub fetch_store: StoreRefName,
+
+    /// Download a URI on a cache miss, as the Remote Asset API allows
+    /// ("Servers MAY fetch content that they do not already have cached").
+    /// Absent, `FetchBlob` only returns what `PushBlob` stored.
+    ///
+    /// Default: None (lookup only)
+    #[serde(default)]
+    pub downloader: Option<FetchDownloaderConfig>,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
+#[cfg_attr(feature = "dev-schema", derive(JsonSchema))]
+pub struct FetchDownloaderConfig {
+    /// The CAS store a downloaded blob is written to, and where a cached
+    /// mapping's blob is looked for: a mapping whose blob was evicted is
+    /// downloaded again. Use the CAS the same instance serves, so clients
+    /// read the returned digest from it.
+    #[serde(deserialize_with = "convert_string_with_shellexpand")]
+    pub cas_store: StoreRefName,
+
+    /// The largest download accepted, checked against Content-Length and
+    /// again while streaming.
+    ///
+    /// Default: 4gb
+    #[serde(
+        default = "default_fetch_max_size_bytes",
+        deserialize_with = "convert_data_size_with_shellexpand"
+    )]
+    pub max_size_bytes: u64,
+
+    /// Only URIs starting with one of these prefixes are downloaded; any
+    /// other is skipped as if it failed. Whatever the list, only `http://`
+    /// and `https://` URIs are downloaded.
+    ///
+    /// Default: empty (any HTTP or HTTPS URI)
+    #[serde(default, deserialize_with = "convert_vec_string_with_shellexpand")]
+    pub allowed_url_prefixes: Vec<String>,
+
+    /// The longest one download may take, in seconds. A request's own
+    /// `timeout`, when shorter, wins.
+    ///
+    /// Default: 600
+    #[serde(
+        default = "default_fetch_timeout_s",
+        deserialize_with = "convert_duration_with_shellexpand"
+    )]
+    pub timeout_s: u64,
+
+    /// The directory a download is written to while it is hashed, before
+    /// it is uploaded to `cas_store`. Must hold `max_size_bytes` per
+    /// concurrent download.
+    ///
+    /// Default: the system's temporary directory
+    #[serde(default, deserialize_with = "convert_string_with_shellexpand")]
+    pub temp_path: String,
+}
+
+const fn default_fetch_max_size_bytes() -> u64 {
+    4 * 1024 * 1024 * 1024
+}
+
+const fn default_fetch_timeout_s() -> u64 {
+    600
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]

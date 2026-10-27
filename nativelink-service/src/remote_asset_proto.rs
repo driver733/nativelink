@@ -61,6 +61,11 @@ pub struct RemoteAssetArtifact {
         tag = "5"
     )]
     pub digest_function: i32,
+
+    /// When the fetch server downloaded the blob, for a request's
+    /// `oldest_content_accepted`. None for a pushed asset.
+    #[prost(message, optional, tag = "6")]
+    pub fetched_at: Option<Timestamp>,
 }
 
 impl RemoteAssetArtifact {
@@ -77,6 +82,7 @@ impl RemoteAssetArtifact {
             blob_digest: Some(blob_digest),
             expire_at,
             digest_function,
+            fetched_at: None,
         }
     }
 

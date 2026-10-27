@@ -16,6 +16,7 @@ nativelink-store = { path = "../nativelink-store" }
 nativelink-util = { path = "../nativelink-util" }
 
 axum = { version = "0.8.3", default-features = false }
+base64 = { version = "0.22.1", default-features = false, features = ["std"] }
 bytes = { version = "1.10.1", default-features = false }
 fastcdc = { version = "3.2.1", default-features = false, features = ["tokio"] }
 futures = { version = "0.3.31", default-features = false }
@@ -34,7 +35,15 @@ prost-types = { version = "0.14.4", default-features = false, features = [
 rand = { version = "0.9.0", default-features = false, features = [
   "thread_rng",
 ] }
+reqwest = { version = "0.13", default-features = false, features = [
+  "charset",
+  "http2",
+  "rustls-no-provider",
+  "stream",
+] }
+rustls = { version = "0.23.27", default-features = false, features = ["ring"] }
 serde_json5 = { version = "0.2.1", default-features = false }
+sha2 = { version = "0.10.8", default-features = false }
 tokio = { version = "1.53.3", features = [
   "fs",
   "io-util",
@@ -57,6 +66,7 @@ uuid = { version = "1.16.0", default-features = false, features = [
   "serde",
   "v4",
 ] }
+webpki-roots = { version = "1", default-features = false }
 zstd = { version = "0.14.3", default-features = false }
 
 [dev-dependencies]
@@ -73,7 +83,6 @@ pretty_assertions = { version = "1.4.1", features = [
 serde_json = { version = "1.0.140", default-features = false, features = [
   "std",
 ] }
-sha2 = { version = "0.10.8", default-features = false }
 tokio = { version = "1.53.3", features = [
   "test-util",
 ], default-features = false }

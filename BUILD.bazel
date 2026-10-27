@@ -14,6 +14,8 @@ rust_binary(
     srcs = [
         "src/bin/nativelink.rs",
     ],
+    # Consumers that build NativeLink as a bazel_dep (foundry) package this binary.
+    visibility = ["//visibility:public"],
     deps = [
         "//nativelink-config",
         "//nativelink-error",

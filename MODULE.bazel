@@ -16,7 +16,11 @@ bazel_dep(name = "rules_shell", version = "0.8.0")
 # these hermetic toolchains replace the host autodetect path.
 bazel_dep(name = "llvm", version = "0.8.18")
 
-register_toolchains("@llvm//toolchain:all")
+# Only when NativeLink is the root module: a consumer (foundry) keeps its own C++ toolchain resolution.
+register_toolchains(
+    "@llvm//toolchain:all",
+    dev_dependency = True,
+)
 
 # We use the Nix Python install, as per https://rules-python.readthedocs.io/en/latest/toolchains.html#local-toolchain
 # Can't use the rules_python download versions as it breaks with the genrule stuff in nativelink-proto

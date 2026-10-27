@@ -243,7 +243,7 @@ impl FetchServer {
         Ok(not_found(&request, last_err))
     }
 
-    /// Records the download under every URI of the request, so a later
+    /// Records a pinned download under every URI of the request, so a later
     /// request naming any of them is served from the cache.
     async fn store_mappings(
         store_info: &FetchStoreInfo,
@@ -267,6 +267,17 @@ impl FetchServer {
             hasher_func.proto_digest_func().into(),
         );
         asset.fetched_at = Some(Timestamp::from(SystemTime::now()));
+        // Without a checksum the URI may name different bytes tomorrow (a
+        // registry index, a "latest" link), and clients rarely send
+        // oldest_content_accepted: the blob is in the CAS, but the next
+        // request downloads again.
+        if !request
+            .qualifiers
+            .iter()
+            .any(|qualifier| qualifier.name == QUALIFIER_CHECKSUM_SRI)
+        {
+            return Ok(asset);
+        }
         let encoded = asset.as_bytes();
         for request_uri in &request.uris {
             let key =

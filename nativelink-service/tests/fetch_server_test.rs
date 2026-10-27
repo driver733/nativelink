@@ -385,3 +385,21 @@ async fn test_fetch_blob_respects_allowed_prefixes() -> Result<(), Status> {
     assert_eq!(hits.load(Ordering::SeqCst), 0);
     Ok(())
 }
+
+#[nativelink_test]
+async fn test_fetch_blob_never_caches_unpinned() -> Result<(), Status> {
+    let store_manager = make_store_manager().await?;
+    let fs = downloading_server(&store_manager);
+    let (uri, hits) = serve(ASSET).await;
+
+    for _ in 0..2 {
+        let response = fs.fetch_blob(fetch_request(&uri, vec![])).await?.into_inner();
+        assert_eq!(response.blob_digest, Some(asset_digest().into()));
+    }
+    assert_eq!(
+        hits.load(Ordering::SeqCst),
+        2,
+        "a download without checksum.sri should not be served from the cache"
+    );
+    Ok(())
+}

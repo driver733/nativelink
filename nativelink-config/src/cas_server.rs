@@ -308,7 +308,9 @@ pub struct FetchConfig {
 
     /// Download a URI on a cache miss, as the Remote Asset API allows
     /// ("Servers MAY fetch content that they do not already have cached").
-    /// Absent, `FetchBlob` only returns what `PushBlob` stored.
+    /// Only a request with a `checksum.sri` qualifier is cached; any other is
+    /// downloaded again each time. Absent, `FetchBlob` only returns what
+    /// `PushBlob` stored.
     ///
     /// Default: None (lookup only)
     #[serde(default)]
